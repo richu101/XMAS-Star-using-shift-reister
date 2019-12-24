@@ -1,38 +1,71 @@
-int ds_pin = 8;
-int stcp_pin = 9;
-int shcp_pin = 10;
+int RCLK = 5;
+int SER = 6;
+int SRCLK = 7;
+
+#define TotalIC 1
+#define TotalICPins TotalIC * 8
+
+boolean Data[TotalICPins];
+
 void setup()
 {
-    pinMode(ds_pin,OUTPUT);
-    pinMode(stcp_pin,OUTPUT);
-    pinMode(shcp_pin,OUTPUT);
-    writetag();
-}
-boolean registers(8);
-void writetag()
-{
-    digitalWrite(shcp_pin,LOW);
-    for ( int i = 7;i.=0;i--)
-    {
-        digitalWrite(stcp_pin,LOW);
-        digitalWrit(ds_pin,registers[i]);
-        digitalWrite(stcp_pin.HIGH);
-    }
-    digitalWrit(shcp_pin,HIGH);
-}
+  pinMode(SER, OUTPUT);
+  pinMode(RCLK, OUTPUT);
+  pinMode(SRCLK, OUTPUT);
+
+  ClearBuffer();
+}              
+
+
 void loop()
 {
-    fot(int i =0; i<9;i++)
-        {   
-            registers[i]=HIGH;
-            delay(100);
-            writetag();
-        }
-    for(int i = 8;i > 0;i++)
-    {
-        registers[i]=LOW;
-        delay(100);
-        writetag();
+   for(int i = TotalICPins - 1; i >=  0; i--)
+   {
+      Data[i] = HIGH;
+      UpdateData();
+      delay(300);
+      ClearBuffer();
+   }
 
+   for(int i = 1;i < TotalICPins - 1;  i++)
+   {
+      Data[i] = HIGH;
+      UpdateData();
+      delay(300);
+      ClearBuffer();
+   }
+   onBuffer();
+   delay(300);
+   
+}
+
+void ClearBuffer()
+{
+    for(int i = TotalICPins - 1; i >=  0; i--)
+    {
+       Data[i] = LOW;
     }
+    UpdateData();
+} 
+
+void onBuffer()
+{
+    for(int i = TotalICPins - 1; i >=  0; i--)
+    {
+       Data[i] = HIGH;
+    }
+    UpdateData();
+} 
+
+void UpdateData()
+{
+   digitalWrite(RCLK, LOW);
+   for(int i = TotalICPins - 1; i >=  0; i--)
+   {
+        digitalWrite(SRCLK, LOW);   
+        digitalWrite(SER, Data[i]);
+        digitalWrite(SRCLK, HIGH);
+
+  }
+  digitalWrite(RCLK, HIGH);
 }
